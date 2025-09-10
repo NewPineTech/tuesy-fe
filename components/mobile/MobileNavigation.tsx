@@ -60,7 +60,7 @@ export function MobileNavigation({ onClose }: MobileNavigationProps) {
             </div>
             <div>
               <h2 className="font-medium">Đạo Tràng Ảo</h2>
-              <p className="text-xs text-muted-foreground">Với Hòa Thượng Tuệ Sỹ</p>
+              <p className="text-xs text-muted-foreground">Thỉnh pháp cùng Hòa Thượng Tuệ Sỹ</p>
             </div>
           </div>
           <Button

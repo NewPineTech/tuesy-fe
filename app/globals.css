@@ -115,7 +115,7 @@
   
   /* Improve touch targets */
   button {
-    @apply min-h-[44px] md:min-h-0;
+    @apply min-h-[30px] md:min-h-0;
   }
   
   /* Better spacing on mobile */

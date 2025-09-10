@@ -52,9 +52,9 @@ export function MobileSidecar({ onClose }: MobileSidecarProps) {
   const currentPayload = payloads[activeTab];
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-card">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-card">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-5 w-5" />
@@ -104,7 +104,7 @@ export function MobileSidecar({ onClose }: MobileSidecarProps) {
 
       {/* Actions Bar */}
       {showActions && (
-        <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/20">
+        <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/50">
           <Button variant="outline" size="sm" className="gap-2">
             <Copy className="h-4 w-4" />
             Sao chép
@@ -126,7 +126,7 @@ export function MobileSidecar({ onClose }: MobileSidecarProps) {
       )}
 
       {/* Content */}
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 bg-card">
         {currentPayload.type === 'citations' && (
           <CitationsMobileView 
             citations={Array.isArray(currentPayload.data) ? currentPayload.data : currentPayload.data.citations || []} 
@@ -151,7 +151,7 @@ export function MobileSidecar({ onClose }: MobileSidecarProps) {
 
 function CitationsMobileView({ citations }: { citations: Citation[] }) {
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 bg-card">
       <div className="flex items-center justify-between">
         <h3 className="font-medium">Nguồn trích dẫn</h3>
         <Badge variant="secondary">{citations.length} nguồn</Badge>
@@ -180,7 +180,7 @@ function CitationsMobileView({ citations }: { citations: Citation[] }) {
               </div>
               
               {citation.quote && (
-                <div className="bg-muted/50 rounded-lg p-3">
+                <div className="bg-muted rounded-lg p-3">
                   <blockquote className="text-sm italic">
                     &ldquo;{citation.quote}&rdquo;
                   </blockquote>
@@ -220,7 +220,7 @@ function CitationsMobileView({ citations }: { citations: Citation[] }) {
 
 function DocMobileView({ doc }: { doc: any }) {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-card">
       <div className="mb-4">
         <h3 className="font-medium mb-2">{doc.title || 'Tài liệu'}</h3>
         <Badge variant="secondary">{doc.kind === 'pdf' ? 'PDF' : 'Markdown'}</Badge>
@@ -263,7 +263,7 @@ function DocMobileView({ doc }: { doc: any }) {
 
 function TableMobileView({ table }: { table: any }) {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-card">
       <div className="mb-4">
         <h3 className="font-medium mb-2">{table.title || 'Bảng dữ liệu'}</h3>
         <Badge variant="secondary">
@@ -301,7 +301,7 @@ function TableMobileView({ table }: { table: any }) {
 
 function ChartMobileView({ chart }: { chart: any }) {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-card">
       <div className="mb-4">
         <h3 className="font-medium mb-2">{chart.title || 'Biểu đồ'}</h3>
         <Badge variant="secondary">
@@ -309,7 +309,7 @@ function ChartMobileView({ chart }: { chart: any }) {
         </Badge>
       </div>
       
-      <div className="bg-muted/20 rounded-lg p-4 text-center">
+      <div className="bg-muted/50 rounded-lg p-4 text-center">
         <div className="text-muted-foreground">
           <div className="mb-2 text-2xl">📊</div>
           <p className="text-sm">Biểu đồ sẽ được hiển thị tại đây</p>

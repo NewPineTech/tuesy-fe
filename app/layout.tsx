@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Đạo Tràng Ảo - Thỉnh Pháp Cùng Hòa Thượng Tuệ Sỹ',
-  description: 'Giao diện trò chuyện AI với Hòa Thượng Tuệ Sỹ - Học Phật pháp một cách hiện đại',
+  description: 'Tất cả mọi người trên thế giới đều có thể online trò chuyện với Tuệ Sỹ bằng chính giọng nói của Ngài với mọi ngôn ngữ - về sở học cả đời Ngài để lại.',
 };
 
 export default function RootLayout({

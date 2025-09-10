@@ -171,7 +171,7 @@ export default function ChatPage() {
           <div className="flex-1 text-center">
             <h1 className="font-medium text-base">Đạo Tràng Ảo</h1>
             <p className="text-xs text-muted-foreground">
-              {isStreaming ? 'Thầy đang phản hồi...' : 'Với Hòa Thượng Tuệ Sỹ'}
+              {isStreaming ? 'Thầy đang phản hồi...' : 'Thỉnh pháp cùng Hòa Thượng Tuệ Sỹ'}
             </p>
           </div>
           

@@ -74,114 +74,153 @@ export function Composer({
 
   return (
     <div className="bg-background">
-      {/* Chat Controls */}
-      <ChatControls agentConfig={agentConfig} onConfigChange={setAgentConfig} />
-
       {/* Main Composer */}
       <div className="p-4">
         <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="relative">
-          <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Nhập câu hỏi của bạn... (Ctrl+Enter để gửi)"
-            className="min-h-[100px] pr-24 resize-none"
-            disabled={isStreaming}
-          />
-          
-          {/* Toolbar */}
-          <div className="absolute bottom-2 right-2 flex items-center gap-1">
-            <Popover open={showConfig} onOpenChange={setShowConfig}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-96" align="end">
-                <div className="space-y-4">
-                  <h4 className="font-medium">Cấu hình Agent</h4>
-                  
-                  {/* Citations Toggle */}
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="citations" className="text-sm">
-                      Hiển thị trích dẫn
-                    </Label>
-                    <Switch
-                      id="citations"
-                      checked={agentConfig.citations}
-                      onCheckedChange={(checked) =>
-                        setAgentConfig({ ...agentConfig, citations: checked })
-                      }
-                    />
-                  </div>
+          <div className="relative">
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Nhập câu hỏi của bạn... (Ctrl+Enter để gửi)"
+              className="min-h-[100px] py-4 px-4 resize-none border-2 border-zinc-600 focus:border-zinc-500"
+              disabled={isStreaming}
+            />
+            
+            {/* Bottom Left - Attachment-style controls inside textarea */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+              {/* Knowledge level selector */}
+              <Select
+                value={agentConfig.knowledgeLevel || 'basic'}
+                onValueChange={(value) => 
+                  setAgentConfig({ ...agentConfig, knowledgeLevel: value as any })
+                }
+              >
+                <SelectTrigger className="h-5 w-auto min-w-0 px-2 py-0 text-xs border border-zinc-500 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 rounded-md focus:ring-1 focus:ring-blue-500 leading-none">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-700">
+                  <SelectItem value="beginner" className="text-xs text-zinc-200 focus:bg-zinc-700">
+                    Đại chúng
+                  </SelectItem>
+                  <SelectItem value="basic" className="text-xs text-zinc-200 focus:bg-zinc-700">
+                    Sơ cơ
+                  </SelectItem>
+                  <SelectItem value="intermediate" className="text-xs text-zinc-200 focus:bg-zinc-700">
+                    Trung cấp
+                  </SelectItem>
+                  <SelectItem value="advanced" className="text-xs text-zinc-200 focus:bg-zinc-700">
+                    Cao cấp
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
-                  {/* Scope Selection */}
-                  <div className="space-y-2">
-                    <Label className="text-sm">Phạm vi tìm kiếm</Label>
-                    <Select
-                      value={agentConfig.scope}
-                      onValueChange={(value: Scope) =>
-                        setAgentConfig({ ...agentConfig, scope: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="corpus">Chỉ cơ sở dữ liệu</SelectItem>
-                        <SelectItem value="web-l1">Web cấp 1</SelectItem>
-                        <SelectItem value="web-l2">Web cấp 2</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Temperature Slider */}
-                  <div className="space-y-2">
-                    <Label className="text-sm">
-                      Nhiệt độ: {agentConfig.temperature}
-                    </Label>
-                    <Slider
-                      value={[agentConfig.temperature]}
-                      onValueChange={([value]) =>
-                        setAgentConfig({ ...agentConfig, temperature: value })
-                      }
-                      min={0}
-                      max={1}
-                      step={0.1}
-                      className="w-full"
-                    />
-                  </div>
-
-                  {/* Reset Button */}
+              {/* Citation toggle button */}
+              <button
+                type="button"
+                onClick={() => setAgentConfig({ ...agentConfig, citations: !agentConfig.citations })}
+                className={`h-5 px-2 py-0 text-xs rounded-md border transition-all focus:ring-1 focus:ring-blue-500 leading-none ${
+                  agentConfig.citations
+                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                    : 'bg-zinc-700 text-zinc-200 border-zinc-500 hover:bg-zinc-600'
+                }`}
+              >
+                Trích dẫn
+              </button>
+            </div>
+            
+            {/* Bottom Right Toolbar */}
+            <div className="absolute bottom-3 right-3 flex items-center gap-1">
+              <Popover open={showConfig} onOpenChange={setShowConfig}>
+                <PopoverTrigger asChild>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    onClick={() => setAgentConfig(defaultAgent)}
-                    className="w-full gap-2"
+                    className="h-8 px-2"
                   >
-                    <RotateCcw className="h-4 w-4" />
-                    Đặt lại mặc định
+                    <Settings className="h-4 w-4" />
                   </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-            
-            <Button
-              type="submit"
-              size="sm"
-              className="h-8 px-3"
-              disabled={!message.trim() || isStreaming}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-96" align="end">
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Cấu hình Agent</h4>
+                    
+                    {/* Citations Toggle */}
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="citations" className="text-sm">
+                        Hiển thị trích dẫn
+                      </Label>
+                      <Switch
+                        id="citations"
+                        checked={agentConfig.citations}
+                        onCheckedChange={(checked) =>
+                          setAgentConfig({ ...agentConfig, citations: checked })
+                        }
+                      />
+                    </div>
+
+                    {/* Scope Selection */}
+                    <div className="space-y-2">
+                      <Label className="text-sm">Phạm vi tìm kiếm</Label>
+                      <Select
+                        value={agentConfig.scope}
+                        onValueChange={(value: Scope) =>
+                          setAgentConfig({ ...agentConfig, scope: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="corpus">Chỉ cơ sở dữ liệu</SelectItem>
+                          <SelectItem value="web-l1">Web cấp 1</SelectItem>
+                          <SelectItem value="web-l2">Web cấp 2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Temperature Slider */}
+                    <div className="space-y-2">
+                      <Label className="text-sm">
+                        Nhiệt độ: {agentConfig.temperature}
+                      </Label>
+                      <Slider
+                        value={[agentConfig.temperature]}
+                        onValueChange={([value]) =>
+                          setAgentConfig({ ...agentConfig, temperature: value })
+                        }
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        className="w-full"
+                      />
+                    </div>
+
+                    {/* Reset Button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setAgentConfig(defaultAgent)}
+                      className="w-full gap-2"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Đặt lại mặc định
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              
+              <Button
+                type="submit"
+                size="sm"
+                className="h-8 px-3"
+                disabled={!message.trim() || isStreaming}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </form>
 

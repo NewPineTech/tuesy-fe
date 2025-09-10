@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -59,6 +60,9 @@ const SheetContent = React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
+      <VisuallyHidden>
+        <SheetPrimitive.Title>Navigation Menu</SheetPrimitive.Title>
+      </VisuallyHidden>
       {children}
     </SheetPrimitive.Content>
   </SheetPortal>
