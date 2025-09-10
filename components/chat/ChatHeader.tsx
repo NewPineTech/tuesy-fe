@@ -5,7 +5,6 @@ import { Menu, PanelRight } from 'lucide-react';
 
 interface ChatHeaderProps {
   title: string;
-  subtitle: string;
   leftCollapsed: boolean;
   rightOpen: boolean;
   onToggleLeftNav: () => void;
@@ -14,7 +13,6 @@ interface ChatHeaderProps {
 
 export function ChatHeader({
   title,
-  subtitle,
   leftCollapsed,
   rightOpen,
   onToggleLeftNav,
@@ -37,8 +35,7 @@ export function ChatHeader({
             </Button>
           )}
           <div>
-            <h1 className="font-medium text-sm">{title}</h1>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <h1 className="font-medium">{title}</h1>
           </div>
         </div>
         

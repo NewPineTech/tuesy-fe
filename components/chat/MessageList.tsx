@@ -173,10 +173,11 @@ export function MessageList({ messages, onSendMessage }: MessageListProps) {
                 </>
               )}
             </div>
-
+            
             {/* Metrics */}
             {message.metrics && (
               <div className="flex items-center gap-2 md:gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
+                <div className="shrink-0 bg-gray-300 h-[1px] w-full mt-2"></div>
                 <div className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {message.metrics.latency_ms}ms

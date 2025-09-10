@@ -241,7 +241,6 @@ export default function ChatPage() {
         {/* Chat Header */}
         <ChatHeader
           title="Tâm bất sanh bất diệt"
-          subtitle={`Với Đại sư Tuệ Sỹ • ${isStreaming ? 'Đang phản hồi...' : 'Sẵn sàng'}`}
           leftCollapsed={leftCollapsed}
           rightOpen={rightOpen}
           onToggleLeftNav={() => setLeftCollapsed(false)}
