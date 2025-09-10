@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidecar } from '@/lib/state/useSidecar';
+import { useUiStore } from '@/lib/state/useUiStore';
 import { SidecarPlugin } from '@/lib/types';
 
 // Import plugins
@@ -30,17 +31,37 @@ interface SidecarProps {
 
 export function Sidecar({ width }: SidecarProps) {
   const { payloads, activeTab, setActiveTab, close } = useSidecar();
+  const { setRightOpen } = useUiStore();
 
   if (payloads.length === 0) {
     return (
       <div 
-        className="bg-background border-l border-border flex items-center justify-center"
-        style={{ width: `${width}px` }}
+        className="border-l border-border flex flex-col"
+        style={{ width: `${width}px`, backgroundColor: '#30302E' }}
       >
-        <div className="text-center text-muted-foreground">
-          <div className="mb-2 text-4xl">📋</div>
-          <p className="text-sm">Nhấn vào trích dẫn hoặc biểu đồ</p>
-          <p className="text-sm">để xem chi tiết tại đây</p>
+        {/* Header with close button */}
+        <div className="border-b border-border p-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium">Chi tiết</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 opacity-90 hover:opacity-100 hover:bg-red-500/20"
+              onClick={() => setRightOpen(false)}
+              title="Đóng bảng điều khiển"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Empty state content */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center text-muted-foreground">
+            <div className="mb-2 text-4xl">📋</div>
+            <p className="text-sm">Nhấn vào trích dẫn hoặc biểu đồ</p>
+            <p className="text-sm">để xem chi tiết tại đây</p>
+          </div>
         </div>
       </div>
     );
@@ -51,8 +72,8 @@ export function Sidecar({ width }: SidecarProps) {
 
   return (
     <div 
-      className="bg-background border-l border-border flex flex-col"
-      style={{ width: `${width}px` }}
+      className="border-l border-border flex flex-col"
+      style={{ width: `${width}px`, backgroundColor: '#30302E' }}
     >
       {/* Tab Header */}
       <div className="border-b border-border p-2">
@@ -81,6 +102,15 @@ export function Sidecar({ width }: SidecarProps) {
                 </Button>
               </>
             )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 opacity-90 hover:opacity-100 hover:bg-red-500/20"
+              onClick={() => setRightOpen(false)}
+              title="Đóng bảng điều khiển"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
@@ -126,10 +156,11 @@ export function Sidecar({ width }: SidecarProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0"
+              className="h-7 w-7 p-0 opacity-90 hover:opacity-100 hover:bg-red-500/20"
               onClick={() => close(0)}
+              title="Đóng tab"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         )}

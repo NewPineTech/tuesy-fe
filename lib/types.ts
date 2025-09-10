@@ -55,6 +55,7 @@ export interface AgentConfig {
   temperature: number;
   scope: Scope;
   citations: boolean;
+  knowledgeLevel?: 'beginner' | 'basic' | 'intermediate' | 'advanced';
 }
 
 export interface Chat {

@@ -11,21 +11,23 @@ import {
   ExternalLink, 
   FileText,
   BarChart3,
-  Volume2,
   Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Message, Citation } from '@/lib/types';
 import { useUiStore } from '@/lib/state/useUiStore';
 import { useSidecar } from '@/lib/state/useSidecar';
+import { QuickActions } from './QuickActions';
 
 interface MessageListProps {
   messages: Message[];
+  onSendMessage?: (message: string) => void;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({ messages, onSendMessage }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { setRightOpen } = useUiStore();
+  const { isMobile, setRightDrawerOpen } = useUiStore();
   const { push: pushPayload } = useSidecar();
 
   useEffect(() => {
@@ -44,7 +46,11 @@ export function MessageList({ messages }: MessageListProps) {
           messageId: message.id
         }
       });
-      setRightOpen(true);
+      if (isMobile) {
+        setRightDrawerOpen(true);
+      } else {
+        setRightOpen(true);
+      }
     }
   };
 
@@ -59,7 +65,11 @@ export function MessageList({ messages }: MessageListProps) {
           messageId: message.id
         }
       });
-      setRightOpen(true);
+      if (isMobile) {
+        setRightDrawerOpen(true);
+      } else {
+        setRightOpen(true);
+      }
     }
   };
 
@@ -71,13 +81,13 @@ export function MessageList({ messages }: MessageListProps) {
             key={message.id}
             className={cn(
               "group relative",
-              message.role === 'user' ? "ml-8" : "mr-8"
+              message.role === 'user' ? "ml-4 md:ml-8" : "mr-4 md:mr-8"
             )}
           >
             {/* Message Content */}
             <div
               className={cn(
-                "rounded-2xl px-4 py-3 shadow-sm",
+                "rounded-2xl px-3 py-3 md:px-4 shadow-sm",
                 message.role === 'user'
                   ? "bg-primary text-primary-foreground ml-auto"
                   : "bg-card border border-border"
@@ -95,7 +105,7 @@ export function MessageList({ messages }: MessageListProps) {
               {message.text && (
                 <div className="prose prose-sm max-w-none dark:prose-invert">
                   {message.text.split('\n').map((line, i) => (
-                    <p key={i} className="mb-2 last:mb-0">
+                    <p key={i} className="mb-2 last:mb-0 text-sm md:text-base leading-relaxed">
                       {line}
                     </p>
                   ))}
@@ -104,22 +114,23 @@ export function MessageList({ messages }: MessageListProps) {
 
               {/* Citations */}
               {message.citations && message.citations.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="mt-3 pt-3 border-t border-border/50 flex flex-wrap gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => openCitations(message)}
-                    className="gap-2"
+                    className="gap-2 text-xs h-8"
                   >
                     <FileText className="h-4 w-4" />
-                    Xem {message.citations.length} nguồn trích dẫn
+                    <span className="hidden sm:inline">Xem {message.citations.length} nguồn trích dẫn</span>
+                    <span className="sm:hidden">{message.citations.length} nguồn</span>
                   </Button>
                 </div>
               )}
 
               {/* Attachments */}
               {message.attachments && message.attachments.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="mt-3 pt-3 border-t border-border/50 flex flex-wrap gap-2">
                   <div className="flex flex-wrap gap-2">
                     {message.attachments.map((attachment, i) => (
                       <Button
@@ -127,13 +138,13 @@ export function MessageList({ messages }: MessageListProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => openAttachment(message, i)}
-                        className="gap-2"
+                        className="gap-2 text-xs h-8"
                       >
                         {attachment.type === 'chart' && <BarChart3 className="h-4 w-4" />}
                         {attachment.type === 'doc' && <FileText className="h-4 w-4" />}
                         {attachment.type === 'table' && <FileText className="h-4 w-4" />}
-                        {attachment.type === 'audio' && <Volume2 className="h-4 w-4" />}
-                        {attachment.title || `Xem ${attachment.type}`}
+                        <span className="hidden sm:inline">{attachment.title || `Xem ${attachment.type}`}</span>
+                        <span className="sm:hidden">{attachment.type}</span>
                       </Button>
                     ))}
                   </div>
@@ -144,19 +155,19 @@ export function MessageList({ messages }: MessageListProps) {
             {/* Message Actions */}
             <div
               className={cn(
-                "flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity",
+                "flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 md:transition-opacity",
                 message.role === 'user' ? "justify-end" : "justify-start"
               )}
             >
-              <Button variant="ghost" size="sm" className="h-8 px-2">
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
                 <Copy className="h-3 w-3" />
               </Button>
               {message.role === 'assistant' && (
                 <>
-                  <Button variant="ghost" size="sm" className="h-8 px-2">
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
                     <RotateCcw className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 px-2">
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
                     <Pin className="h-3 w-3" />
                   </Button>
                 </>
@@ -165,21 +176,31 @@ export function MessageList({ messages }: MessageListProps) {
 
             {/* Metrics */}
             {message.metrics && (
-              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 md:gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
                 <div className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {message.metrics.latency_ms}ms
                 </div>
                 {message.metrics.model && (
-                  <Badge variant="secondary" className="text-xs px-2 py-0">
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
                     {message.metrics.model}
                   </Badge>
                 )}
                 {message.metrics.verifier && (
-                  <Badge variant="outline" className="text-xs px-2 py-0">
-                    Độ tin cậy: {message.metrics.verifier}%
+                  <Badge variant="outline" className="text-xs px-1.5 py-0 h-5">
+                    <span className="hidden sm:inline">Độ tin cậy: </span>{message.metrics.verifier}%
                   </Badge>
                 )}
+              </div>
+            )}
+
+            {/* Quick Actions for completed assistant messages */}
+            {message.role === 'assistant' && !message.isStreaming && onSendMessage && (
+              <div className="mt-3 pt-3 border-t border-border/30">
+                <QuickActions 
+                  onAction={onSendMessage}
+                  className="justify-start"
+                />
               </div>
             )}
           </div>

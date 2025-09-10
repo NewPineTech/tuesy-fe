@@ -8,12 +8,16 @@ import { ResizeHandle } from '@/components/layout/ResizeHandle';
 import { LeftNav } from '@/components/layout/LeftNav';
 import { MessageList } from '@/components/chat/MessageList';
 import { Composer } from '@/components/chat/Composer';
+import { ChatHeader } from '@/components/chat/ChatHeader';
 import { Sidecar } from '@/components/sidecar/Sidecar';
 import { useUiStore, COLLAPSED_LEFT_WIDTH } from '@/lib/state/useUiStore';
 import { useHotkeys } from '@/lib/hooks/useHotkeys';
 import { streamChatResponse } from '@/lib/api';
 import { Message, AgentConfig } from '@/lib/types';
 import { mockMessages } from '@/lib/mock-data';
+import { MobileVoiceComposer } from '@/components/mobile/MobileVoiceComposer';
+import { MobileNavigation } from '@/components/mobile/MobileNavigation';
+import { MobileSidecar } from '@/components/mobile/MobileSidecar';
 import { cn } from '@/lib/utils';
 
 export default function ChatPage() {
@@ -37,6 +41,16 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [agentConfig, setAgentConfig] = useState<AgentConfig>({
+    id: 'tuesy_agent',
+    name: 'Đại sư Tuệ Sỹ',
+    domains: ['Phật học', 'Thiền', 'Triết học'],
+    knowledgeIds: ['tuesy_corpus'],
+    temperature: 0.7,
+    scope: 'corpus',
+    citations: true,
+    knowledgeLevel: 'basic'
+  });
 
   useHotkeys();
 
@@ -65,7 +79,8 @@ export default function ChatPage() {
   }
 
   // Handle message sending with streaming
-  const handleSendMessage = async (text: string, config: AgentConfig) => {
+  const handleSendMessage = async (text: string, config?: AgentConfig) => {
+    const finalConfig = config || agentConfig;
     const userMessage: Message = {
       id: `user_${Date.now()}`,
       role: 'user',
@@ -86,7 +101,7 @@ export default function ChatPage() {
 
     try {
       let fullResponse = '';
-      for await (const chunk of streamChatResponse(text, config)) {
+      for await (const chunk of streamChatResponse(text, finalConfig)) {
         fullResponse += chunk;
         setMessages(prev => 
           prev.map(msg => 
@@ -140,37 +155,62 @@ export default function ChatPage() {
   if (isMobile) {
     return (
       <div className="h-screen flex flex-col bg-background">
-        {/* Mobile Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
+        {/* Mobile Header - Improved */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-10">
           <Sheet open={leftDrawerOpen} onOpenChange={setLeftDrawerOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-80 p-0">
-              <LeftNav collapsed={false} width={320} />
+            <SheetContent side="left" className="w-full max-w-sm p-0">
+              <MobileNavigation onClose={() => setLeftDrawerOpen(false)} />
             </SheetContent>
           </Sheet>
           
-          <h1 className="font-semibold">Đạo Tràng Ảo</h1>
+          <div className="flex-1 text-center">
+            <h1 className="font-medium text-base">Đạo Tràng Ảo</h1>
+            <p className="text-xs text-muted-foreground">
+              {isStreaming ? 'Thầy đang phản hồi...' : 'Với Hòa Thượng Tuệ Sỹ'}
+            </p>
+          </div>
           
           <Sheet open={rightDrawerOpen} onOpenChange={setRightDrawerOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
                 <PanelRight className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-96 p-0">
-              <Sidecar width={384} />
+            <SheetContent side="right" className="w-full max-w-md p-0">
+              <MobileSidecar onClose={() => setRightDrawerOpen(false)} />
             </SheetContent>
           </Sheet>
         </div>
 
-        {/* Mobile Chat */}
+        {/* Mobile Chat - Improved */}
         <div className="flex-1 flex flex-col min-h-0">
           <MessageList messages={messages} />
-          <Composer onSendMessage={handleSendMessage} isStreaming={isStreaming} />
+          <MobileVoiceComposer 
+            onSendMessage={handleSendMessage} 
+            isStreaming={isStreaming}
+            agentConfig={mockMessages[0] ? {
+              id: 'tuesy_agent',
+              name: 'Đại sư Tuệ Sỹ',
+              domains: ['Phật học', 'Thiền', 'Triết học'],
+              knowledgeIds: ['tuesy_corpus'],
+              temperature: 0.7,
+              scope: 'corpus',
+              citations: true
+            } : {
+              id: 'tuesy_agent',
+              name: 'Đại sư Tuệ Sỹ',
+              domains: ['Phật học'],
+              knowledgeIds: ['tuesy_corpus'],
+              temperature: 0.7,
+              scope: 'corpus',
+              citations: true
+            }}
+          />
         </div>
       </div>
     );
@@ -179,7 +219,11 @@ export default function ChatPage() {
   return (
     <div className="h-screen flex bg-background">
       {/* Left Navigation */}
-      <LeftNav collapsed={leftCollapsed} width={effectiveLeftWidth} />
+      <LeftNav 
+        collapsed={leftCollapsed} 
+        width={effectiveLeftWidth} 
+        onToggleCollapse={() => setLeftCollapsed(true)}
+      />
       
       {/* Left Resize Handle */}
       {!leftCollapsed && (
@@ -192,44 +236,31 @@ export default function ChatPage() {
       {/* Center Chat Area */}
       <div 
         className="flex flex-col min-h-0"
-        style={{ width: centerWidth }}
+        style={{ width: centerWidth, backgroundColor: '#262624' }}
       >
         {/* Chat Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <div className="flex items-center gap-3">
-            {leftCollapsed && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setLeftCollapsed(false)}
-              >
-                <Menu className="h-4 w-4" />
-              </Button>
-            )}
-            <div>
-              <h1 className="font-medium">Tâm bất sanh bất diệt</h1>
-              <p className="text-sm text-muted-foreground">
-                Với Đại sư Tuệ Sỹ • {isStreaming ? 'Đang phản hồi...' : 'Sẵn sàng'}
-              </p>
-            </div>
-          </div>
-          
-          {!rightOpen && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => useUiStore.getState().setRightOpen(true)}
-            >
-              <PanelRight className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
+        <ChatHeader
+          title="Tâm bất sanh bất diệt"
+          subtitle={`Với Đại sư Tuệ Sỹ • ${isStreaming ? 'Đang phản hồi...' : 'Sẵn sàng'}`}
+          leftCollapsed={leftCollapsed}
+          rightOpen={rightOpen}
+          onToggleLeftNav={() => setLeftCollapsed(false)}
+          onToggleRightPanel={() => useUiStore.getState().setRightOpen(true)}
+        />
 
         {/* Messages */}
-        <MessageList messages={messages} />
+        <MessageList 
+          messages={messages} 
+          onSendMessage={(message) => handleSendMessage(message)}
+        />
         
         {/* Composer */}
-        <Composer onSendMessage={handleSendMessage} isStreaming={isStreaming} />
+        <Composer 
+          onSendMessage={handleSendMessage} 
+          isStreaming={isStreaming} 
+          agentConfig={agentConfig}
+          onConfigChange={setAgentConfig}
+        />
       </div>
       
       {/* Right Resize Handle */}

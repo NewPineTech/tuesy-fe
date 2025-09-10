@@ -44,7 +44,7 @@ function CitationsRenderer({ payload }: { payload: any }) {
                 
                 {citation.quote && (
                   <blockquote className="pl-3 border-l-2 border-primary/20 text-sm text-muted-foreground italic">
-                    "{citation.quote}"
+                    &ldquo;{citation.quote}&rdquo;
                   </blockquote>
                 )}
                 

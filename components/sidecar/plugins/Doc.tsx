@@ -2,7 +2,7 @@ import { SidecarPlugin } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink, FileText } from 'lucide-react';
 
 function DocRenderer({ payload }: { payload: any }) {
   const doc = payload.data;

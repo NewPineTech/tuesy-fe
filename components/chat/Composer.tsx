@@ -21,21 +21,32 @@ import {
 import { cn } from '@/lib/utils';
 import { AgentConfig, Scope } from '@/lib/types';
 import { defaultAgent } from '@/lib/mock-data';
+import { ChatControls } from './ChatControls';
 
 interface ComposerProps {
-  onSendMessage: (message: string, config: AgentConfig) => void;
+  onSendMessage: (message: string, config?: AgentConfig) => void;
   isStreaming?: boolean;
+  agentConfig?: AgentConfig;
+  onConfigChange?: (config: AgentConfig) => void;
 }
 
-export function Composer({ onSendMessage, isStreaming = false }: ComposerProps) {
+export function Composer({ 
+  onSendMessage, 
+  isStreaming = false, 
+  agentConfig: externalConfig,
+  onConfigChange 
+}: ComposerProps) {
   const [message, setMessage] = useState('');
-  const [agentConfig, setAgentConfig] = useState<AgentConfig>(defaultAgent);
+  const [internalConfig, setInternalConfig] = useState<AgentConfig>(defaultAgent);
+  
+  const agentConfig = externalConfig || internalConfig;
+  const setAgentConfig = onConfigChange || setInternalConfig;
   const [showConfig, setShowConfig] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim() && !isStreaming) {
-      onSendMessage(message, agentConfig);
+      onSendMessage(message);
       setMessage('');
     }
   };
@@ -62,45 +73,13 @@ export function Composer({ onSendMessage, isStreaming = false }: ComposerProps) 
   ];
 
   return (
-    <div className="border-t border-border bg-background p-4">
-      {/* Agent Configuration Summary */}
-      <div className="mb-3 flex items-center gap-2 flex-wrap">
-        <Badge variant="outline" className="text-xs">
-          {agentConfig.name}
-        </Badge>
-        <Badge variant="secondary" className="text-xs">
-          {agentConfig.scope === 'corpus' ? 'Chỉ cơ sở dữ liệu' : 
-           agentConfig.scope === 'web-l1' ? 'Web cấp 1' : 'Web cấp 2'}
-        </Badge>
-        {agentConfig.citations && (
-          <Badge variant="outline" className="text-xs">
-            Có trích dẫn
-          </Badge>
-        )}
-        <Badge variant="outline" className="text-xs">
-          Nhiệt độ: {agentConfig.temperature}
-        </Badge>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mb-3 flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-muted-foreground">Thao tác nhanh:</span>
-        {quickActions.map((action) => (
-          <Button
-            key={action.label}
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 gap-1"
-            onClick={() => setMessage(action.prompt)}
-          >
-            <action.icon className="h-3 w-3" />
-            {action.label}
-          </Button>
-        ))}
-      </div>
+    <div className="bg-background">
+      {/* Chat Controls */}
+      <ChatControls agentConfig={agentConfig} onConfigChange={setAgentConfig} />
 
       {/* Main Composer */}
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="p-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
           <Textarea
             value={message}
@@ -203,16 +182,17 @@ export function Composer({ onSendMessage, isStreaming = false }: ComposerProps) 
               <Send className="h-4 w-4" />
             </Button>
           </div>
-        </div>
-      </form>
+          </div>
+        </form>
 
-      {/* Status */}
-      {isStreaming && (
-        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-          <div className="animate-pulse w-2 h-2 bg-green-500 rounded-full" />
-          Đang xử lý...
-        </div>
-      )}
+        {/* Status */}
+        {isStreaming && (
+          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="animate-pulse w-2 h-2 bg-green-500 rounded-full" />
+            Đang xử lý...
+          </div>
+        )}
+      </div>
     </div>
   );
 }

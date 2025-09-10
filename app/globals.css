@@ -80,3 +80,55 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .prose {
+    @apply text-sm;
+  }
+  
+  .prose p {
+    @apply leading-relaxed;
+  }
+  
+  /* Improve touch targets */
+  button {
+    @apply min-h-[44px] md:min-h-0;
+  }
+  
+  /* Better spacing on mobile */
+  .space-y-6 > * + * {
+    @apply mt-4;
+  }
+  
+  /* Responsive text sizes */
+  h1 {
+    @apply text-lg md:text-xl;
+  }
+  
+  h2 {
+    @apply text-base md:text-lg;
+  }
+}
